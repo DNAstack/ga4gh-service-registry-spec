@@ -1,0 +1,305 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "GA4GH Service Registry API Specification",
+    "version": "1.0.0",
+    "description": "More information on [GitHub](https://github.com/ga4gh-discovery/ga4gh-service-registry/).",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://raw.githubusercontent.com/ga4gh-discovery/ga4gh-service-registry/develop/LICENSE"
+    },
+    "contact": {
+      "name": "GA4GH Discovery Networks Team",
+      "email": "ga4gh-discovery-networks@ga4gh.org"
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/services": {
+      "get": {
+        "summary": "List services in the registry",
+        "operationId": "getServices",
+        "tags": [
+          "services"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of services",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExternalService"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/services/{serviceId}": {
+      "get": {
+        "summary": "Show information about a specific service",
+        "operationId": "getServiceById",
+        "tags": [
+          "services"
+        ],
+        "parameters": [
+          {
+            "name": "serviceId",
+            "in": "path",
+            "description": "ID of a service to retrieve",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Information about a service with the given ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalService"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/services/types": {
+      "get": {
+        "summary": "List types of services exposed by the registry",
+        "description": "List all distinct values of the `type` field of exposed services (see `Service`).",
+        "operationId": "getServiceTypes",
+        "tags": [
+          "services"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of service types",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "example": "org.ga4gh:beacon:1.0.1"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/service-info": {
+      "get": {
+        "summary": "Show information about the registry",
+        "operationId": "getServiceInfo",
+        "tags": [
+          "service-info"
+        ],
+        "responses": {
+          "200": {
+            "description": "Display service information about this service registry.\n\nUse `type: org.ga4gh:service-registry:1.0.0` when implementing this specification directly.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Service"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "Unauthorized (RFC 7235)",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "Forbidden (RFC 7231)",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Not found (RFC 7231)",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "Internal server error (RFC 7231)",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Error": {
+        "description": "Unexpected error (RFC 7231)",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "Service": {
+        "$ref": "https://raw.githubusercontent.com/ga4gh-discovery/ga4gh-service-info/develop/service-info.yaml#/components/schemas/Service"
+      },
+      "ExternalService": {
+        "description": "GA4GH service with a URL",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Service"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "example": "https://example.com"
+              }
+            },
+            "required": [
+              "url"
+            ]
+          }
+        ]
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Code identifying the failure, e.g. an HTTP status code (as per RFC 7231)",
+            "example": "500"
+          },
+          "message": {
+            "type": "string",
+            "description": "Short description of the error",
+            "example": "Internal server error"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp describing when the error was thrown (as per RFC 3339)",
+            "example": "2019-06-04T12:58:19Z"
+          },
+          "errors": {
+            "type": "array",
+            "description": "List of errors causing this response",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "description": "Error code",
+                  "example": "QueryTimeoutException"
+                },
+                "message": {
+                  "type": "string",
+                  "description": "Description of the error",
+                  "example": "Could not connect to the database"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
